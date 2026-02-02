@@ -1,25 +1,23 @@
 "use client";
 
-import {  useState } from "react";
+import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
+import Link from "next/link";
 
 import { fetchNotes } from "../../../../lib/api";
 import type { Note } from "../../../../types/note";
-import css from "../../NotesPage.module.css";
 
 import NoteList from "../../../../components/NoteList/NoteList";
-import Modal from "../../../../components/Modal/Modal";
-import NoteForm from "../../../../components/NoteForm/NoteForm";
 import Pagination from "../../../../components/Pagination/Pagination";
 import SearchBox from "../../../../components/SearchBox/SearchBox";
 
+import css from "../../NotesPage.module.css";
 
 export default function NotesClient({ tag }: { tag?: string }) {
-  //console.log("NotesClient tag:", tag);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
   const [debouncedSearch] = useDebounce(search, 500);
 
   const { data, isLoading, isError } = useQuery<{
@@ -29,24 +27,17 @@ export default function NotesClient({ tag }: { tag?: string }) {
     queryKey: ["notes", page, debouncedSearch, tag],
     queryFn: () =>
       fetchNotes({
-  page,
-  perPage: 12,
-  search: debouncedSearch,
-  tag,
-}),
+        page,
+        perPage: 12,
+        search: debouncedSearch,
+        tag,
+      }),
     placeholderData: keepPreviousData,
   });
-
-  return (
+return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox
-          value={search}
-          onChange={(value) => {
-            setSearch(value);
-            setPage(1);
-          }}
-        />
+        <SearchBox value={search} onChange={setSearch} />
 
         {data?.totalPages && data.totalPages > 1 && (
           <Pagination
@@ -56,9 +47,9 @@ export default function NotesClient({ tag }: { tag?: string }) {
           />
         )}
 
-        <button className={css.button} onClick={() => setModalOpen(true)}>
+        <Link href="/notes/action/create" className={css.button}>
           Create note +
-        </button>
+        </Link>
       </header>
 
       <NoteList
@@ -66,12 +57,6 @@ export default function NotesClient({ tag }: { tag?: string }) {
         isLoading={isLoading}
         isError={isError}
       />
-
-      {isModalOpen && (
-        <Modal onClose={() => setModalOpen(false)}>
-          <NoteForm onClose={() => setModalOpen(false)} />
-        </Modal>
-      )}
     </div>
   );
 }
