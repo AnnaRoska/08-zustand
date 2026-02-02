@@ -24,12 +24,11 @@ const NoteForm = () => {
 
       queryClient.invalidateQueries({ queryKey: ["notes"] });
 
-
       clearDraft();
 
       router.back();
     } catch (error) {
-      alert("Failed to create note");
+      alert(`Failed to create note: ${(error as Error).message}`);
     }
   }
 

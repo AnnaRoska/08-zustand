@@ -35,28 +35,34 @@ export default function NotesClient({ tag }: { tag?: string }) {
     placeholderData: keepPreviousData,
   });
 return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox value={search} onChange={setSearch} />
-
-        {data?.totalPages && data.totalPages > 1 && (
-          <Pagination
-            page={page}
-            pageCount={data.totalPages}
-            onPageChange={setPage}
-          />
-        )}
-
-        <Link href="/notes/action/create" className={css.button}>
-          Create note +
-        </Link>
-      </header>
-
-      <NoteList
-        notes={data?.notes ?? []}
-        isLoading={isLoading}
-        isError={isError}
+  <div className={css.app}>
+    <header className={css.toolbar}>
+      <SearchBox
+        value={search}
+        onChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
       />
-    </div>
-  );
+
+      {data?.totalPages && data.totalPages > 1 && (
+        <Pagination
+          page={page}
+          pageCount={data.totalPages}
+          onPageChange={setPage}
+        />
+      )}
+
+      <Link href="/notes/action/create" className={css.button}>
+        Create note +
+      </Link>
+    </header>
+
+    <NoteList
+      notes={data?.notes ?? []}
+      isLoading={isLoading}
+      isError={isError}
+    />
+  </div>
+);
 }
